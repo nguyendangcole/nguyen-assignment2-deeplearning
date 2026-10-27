@@ -11,12 +11,14 @@
 | :--- | :--- |
 | **Dataset Name** | **SUN RGB-D** (Indoor Scene Understanding Benchmark) |
 | **Total Benchmark Pairs** | **10,335** aligned RGB & Depth pairs |
-| **Selected Subset for BTL2** | **6,375 pairs** (Train: 5,285 \| Val: 1,090) + Separate Test: ~4,000 |
-| **Depth Representation** | 16-bit PNG (`uint16`), millimeter scale (`val / 1000.0` = meters) |
-| **Effective Range** | $0.5\,\text{m} \le Z \le 8.0\,\text{m}$ (Indoor cutoff) |
-| **Invalid Pixel Indicator** | `pixel_val == 0` (Sensor occlusion, reflection, out of range) |
+| **Analyzed Dataset Corpus** | **7,001 pairs** (chiếm ~68% full benchmark, thỏa mãn vượt trội yêu cầu $\ge 5{,}000$) |
+| **Selected Split Plan** | Train: 5,285 pairs \| Val: 1,090 pairs \| Test: 626 pairs |
+| **Depth Ground Truth Format** | 16-bit PNG (Lossless uint16), giải mã: $Z = ((D \gg 3) \mid (D \ll 13)) / 1000.0$ (mét) |
+| **Effective Evaluation Range** | $0.50\,\text{m} \le Z \le 8.00\,\text{m}$ (Indoor envelope Section 19.6) |
+| **Empirical Distribution** | Mean: $2.32\,\text{m}$ \| Median: $2.07\,\text{m}$ \| Std: $1.04\,\text{m}$ |
+| **Invalid Pixel Indicator** | `valid_mask = (Z > 0.5) & (Z <= 8.0)` (Mean missing: $10.34\%$, Max: $64.53\%$) |
 | **Anti-Leakage Split Unit** | **Physical Room / Scene Disjoint Split** |
-| **Compute Feasibility** | ~5.5 hours on Google Colab (NVIDIA T4 / L4), VRAM usage ~6.2 GB |
+| **Hardware & Compute** | Google Colab Pro (NVIDIA L4 24GB / T4 16GB), VRAM usage ~6.0 GB |
 
 ---
 
@@ -35,7 +37,7 @@
 - **Task Type:** Supervised Monocular Depth Estimation (Dự đoán bản đồ độ sâu liên tục từ ảnh RGB duy nhất).
 - **Input Definition:**
   $$I \in \mathbb{R}^{H \times W \times 3}$$
-  Ảnh quang học RGB đơn góc nhìn (resized về chuẩn $256 \times 320$ hoặc $256 \times 256$, normalized ImageNet $\mu = [0.485, 0.456, 0.406]$, $\sigma = [0.229, 0.224, 0.225]$).
+  Ảnh quang học RGB đơn góc nhìn (resized về chuẩn $256 \times 320$, normalized ImageNet $\mu = [0.485, 0.456, 0.406]$, $\sigma = [0.229, 0.224, 0.225]$).
 - **Output Definition:**
   $$D \in \mathbb{R}^{H \times W \times 1}$$
   Bản đồ độ sâu dense metric thực tế (đơn vị: mét), trong đó mỗi pixel $(u, v)$ thể hiện khoảng cách trực giao $Z_{(u,v)}$ từ mặt phẳng cảm biến quang học đến bề mặt vật thể.
@@ -49,22 +51,23 @@
   - Asus Xtion (3,784 ảnh)
   - Microsoft Kinect v1 (1,449 ảnh)
   - Microsoft Kinect v2 (1,318 ảnh)
-- **Kiểu nhãn (Annotation):**
+- **Kiểu nhãn (Annotation) & Giải mã phần cứng:**
   - Ảnh depth chuẩn **16-bit PNG** không nén mất mát (lossless uint16).
-  - Không gian giá trị pixel: $[0, 65535]$ (tương ứng $0$ đến $65.535\,\text{m}$, với bước nhảy $1\,\text{mm}$).
+  - Cảm biến hồng ngoại gốc của Princeton mã hóa dạng xoay 3-bit: cần giải mã bằng phép toán bitwise trước khi quy đổi sang mét:
+    $$Z = \frac{(D \gg 3) \mid (D \ll 13)}{1000.0} \quad (\text{mét})$$
 
 ---
 
-### 4. Preliminary Distribution Analysis (Phân bố dữ liệu)
+### 4. Preliminary Distribution Analysis (Phân bố dữ liệu trên 7,001 cặp ảnh)
 - **Phân bố ngữ cảnh (Scenes):** 
-  - Toàn bộ dữ liệu được chụp từ các môi trường nội thất trong nhà thực tế: *Phòng ngủ (Bedroom), Văn phòng (Office), Lớp học (Classroom), Phòng khách (Living room), Nhà ăn (Cafeteria)*.
-- **Phân bố cự ly độ sâu ($Z$):**
-  - $Z \in [0.5\,\text{m}, 3.0\,\text{m}]$: Chiếm **~65%** tổng số điểm ảnh hợp lệ (các vật thể chính: bàn, ghế, giường, người).
-  - $Z \in [3.0\,\text{m}, 6.0\,\text{m}]$: Chiếm **~25%** (tường đối diện, trần nhà, cửa sổ).
-  - $Z > 6.0\,\text{m}$: Chiếm **~10%** (cuối hành lang, phòng hội trường lớn).
+  - Toàn bộ dữ liệu được chụp từ các môi trường nội thất trong nhà thực tế: *Phòng ngủ (Bedroom), Văn phòng (Office), Lớp học (Classroom), Phòng khách (Living room), Nhà ăn (Cafeteria)...*
+- **Phân bố cự ly độ sâu thực nghiệm ($Z$):**
+  - **Mean Valid Depth:** $2.32\,\text{m}$, **Median:** $2.07\,\text{m}$, **Std:** $1.04\,\text{m}$.
+  - $Z \in [0.5\,\text{m}, 3.5\,\text{m}]$: Chiếm **~78%** tổng số điểm ảnh hợp lệ (các vật thể chính: bàn ghế, sofa, giường, tủ, người đứng trước camera).
+  - $Z \in [3.5\,\text{m}, 8.0\,\text{m}]$: Chiếm **~22%** (tường đối diện, trần nhà, cuối hành lang).
 - **Thống kê Invalid Pixels:**
-  - Trung bình **8.4%** tổng số pixel trong mỗi frame là invalid (`depth == 0`).
-  - Nguyên nhân: Hiện tượng thị sai (parallax gap) giữa ống kính RGB và mắt phát tia hồng ngoại, bề mặt kính trong suốt, hoặc vật thể nằm sát thấu kính cảm biến ($< 0.5\,\text{m}$).
+  - Trung bình **10.34%** tổng số pixel trong mỗi frame là invalid (`depth == 0`). Max ghi nhận: $64.53\%$.
+  - Nguyên nhân: Hiện tượng thị sai (parallax gap) giữa ống kính RGB và mắt phát tia hồng ngoại, bề mặt kính trong suốt/gương soi, hoặc vật thể nằm sát thấu kính ($< 0.5\,\text{m}$).
 
 ---
 
@@ -73,10 +76,10 @@ Nhóm thiết lập phân vùng dữ liệu thỏa mãn chặt chẽ yêu cầu 
 
 | Tập dữ liệu (Split) | Số lượng cặp ảnh (Pairs) | Tỷ lệ (%) | Mục đích sử dụng |
 | :--- | :--- | :--- | :--- |
-| **Train Set** | **5,285** | ~51% (hoặc ~83% train/val pool) | Tối ưu gradient, cập nhật trọng số mô hình |
-| **Validation Set** | **1,090** | ~11% (hoặc ~17% train/val pool) | Điều chỉnh hyperparameter, Early Stopping |
-| **Test Set** | **3,960** | ~38% | Đánh giá tổng kết độc lập cuối cùng |
-| **Tổng cộng** | **10,335** | **100%** | |
+| **Train Set** | **5,285** | ~75.5% | Tối ưu gradient, cập nhật trọng số mô hình |
+| **Validation Set** | **1,090** | ~15.6% | Điều chỉnh hyperparameter, Early Stopping |
+| **Test Set** | **626** | ~8.9% | Đánh giá tổng kết độc lập cuối cùng |
+| **Tổng cộng** | **7,001** | **100%** | Phân hoạch từ tập dữ liệu đầy đủ đã trích xuất |
 
 ---
 
@@ -96,44 +99,40 @@ Nhóm thiết lập phân vùng dữ liệu thỏa mãn chặt chẽ yêu cầu 
 2. **Mean Absolute Relative Error (AbsRel):**
    $$\text{AbsRel} = \frac{1}{|\Omega|} \sum_{i \in \Omega} \frac{|y_i - \hat{y}_i|}{y_i}$$
 3. **Threshold Accuracy ($\delta$):**
-   Tỉ lệ phần trăm điểm ảnh thỏa mãn:
    $$\delta_n = \frac{1}{|\Omega|} \sum_{i \in \Omega} \mathbb{I} \left( \max\left(\frac{y_i}{\hat{y}_i}, \frac{\hat{y}_i}{y_i}\right) < 1.25^n \right), \quad n \in \{1, 2, 3\}$$
 
 ---
 
-### 8. Baseline Plan (Kế hoạch mô hình cơ sở)
-- **Kiến trúc:** **ResNet-50 Encoder + U-Net Feature Decoder** với Skip Connections.
-- **Hàm mất mát (Loss Function):** Kết hợp hàm **Scale-Invariant Loss (SILog)** và **Gradient Edge Loss**:
+### 8 & 9. Model Architecture & Planned Experiments (E1, E2, E3)
+Để nghiên cứu sâu sự chênh lệch giữa mô hình CNN cổ điển và Vision Transformer nền tảng, đồ án thiết lập 3 thí nghiệm có đối chứng chặt chẽ:
+
+| Thí nghiệm (Exp) | Kiến trúc mô hình | Chiến lược huấn luyện | Mục tiêu khoa học |
+| :--- | :--- | :--- | :--- |
+| **E1** | **Simple CNN Encoder–Decoder (UNet)** | **Trained from scratch** (khởi tạo trọng số ngẫu nhiên) | Thiết lập mốc hiệu năng cơ sở (baseline) không dùng pretraining. |
+| **E2** | **Depth Anything V2 (Small - ViT)** | **Freeze encoder, train depth head only** | Đo lường năng lực trích xuất đặc trưng của Vision Transformer foundation model. |
+| **E3** | **Depth Anything V2 (Small - ViT)** | **Full fine-tuning (Encoder + Depth Head)** | Tối ưu hóa toàn diện end-to-end, cạnh tranh độ sắc nét SOTA trên indoor scenes. |
+
+- **Hàm mất mát chung:** Kết hợp hàm **Scale-Invariant Loss (SILog)** và **Gradient Edge Loss**:
   $$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{SILog}} + 0.5 \cdot \mathcal{L}_{\text{grad}}$$
   *(Được tính có trọng số chỉ trên vùng `valid_mask`).*
 
 ---
 
-### 9. Planned Pretrained Model(s) (Mô hình nâng cao / Cải tiến)
-- **Baseline:** Pretrained ResNet-50 trên ImageNet-1k.
-- **Advanced / SOTA Transfer Learning:**
-  - **MiDaS v3.1 (DPT-Hybrid)**: Sử dụng Vision Transformer (ViT) làm backbone.
-  - **Depth Anything V2 (Small)**: Mô hình foundation SOTA hiện nay, hỗ trợ fine-tuning rất nhẹ và hội tụ nhanh trên cự ly indoor.
-
----
-
 ### 10. Compute Estimate (Ước lượng tài nguyên tính toán)
-- **Môi trường:** Google Colab (GPU NVIDIA T4 16GB VRAM) / MacBook M-Series (kiểm thử code nội bộ).
+- **Môi trường:** Google Colab Pro (GPU NVIDIA L4 24GB VRAM / Tesla T4 16GB VRAM).
+- **Lưu trữ dữ liệu:** File nén gốc `SUNRGBD.zip` (6.5 GB) lưu trữ cố định trên Google Drive tại `MyDrive/BTL-deep_learning/assignment2/datasets/SUNRGBD.zip`.
 - **Thông số huấn luyện:**
   - Batch Size: $16$
   - Resolution: $256 \times 320$
   - Mixed Precision: FP16 (`torch.cuda.amp.autocast`)
-  - VRAM chiếm dụng: $\approx 5.8 - 6.4\,\text{GB}$ (hoàn toàn an toàn trong ngưỡng 16GB).
-  - Tốc độ xử lý: $\approx 18\,\text{giây} / 100\,\text{batches}$ $\rightarrow$ $\approx 1.2\,\text{phút} / \text{epoch}$.
-  - Tổng thời gian huấn luyện 25 epochs: $\approx 30 - 45\,\text{phút}$ trên Colab GPU.
+  - VRAM chiếm dụng: $\approx 5.8 - 6.4\,\text{GB}$
+  - Tốc độ xử lý trên L4: $\approx 35 - 45\,\text{giây} / \text{epoch}$ (train 20 epochs mất $\approx 15\,\text{phút}$).
 
 ---
 
 ### 11. Subset Selection Rules & Section 19.6 Specifications
-- **Subset Filter:** Lấy 5,285 ảnh từ train split chính thức. Loại bỏ các ảnh có tỉ lệ invalid pixels $> 35\%$.
-- **Depth Scale:** $Z = \text{Pixel}_{\text{uint16}} / 1000.0$ (chuyển đổi từ milimet sang mét).
-- **Invalid Pixels:** Điểm ảnh có giá trị $= 0$ được mask bằng binary boolean tensor:
+- **Zero-Drop Strategy:** Bảo toàn 100% các cặp ảnh trong tập dữ liệu. Các điểm ảnh bị che khuất, bề mặt kính trong suốt hoặc ngoài dải đo được loại bỏ động qua binary boolean tensor trong hàm Loss:
   ```python
-  valid_mask = (depth_gt > 0.5) & (depth_gt <= 8.0)
+  valid_mask = (depth_gt > 0.5) & (depth_gt <= 8.0) & np.isfinite(depth_gt)
   ```
-  Tất cả các hàm loss và metrics đều bỏ qua các điểm ảnh có `valid_mask == False`.
+  Tất cả các hàm loss và metrics đều chỉ tính gradient trên vùng `valid_mask == True`.
