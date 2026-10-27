@@ -1,11 +1,11 @@
 Specification / Metric,Empirical Value
 Total Benchmark Pairs in Full SUN RGB-D,"10,335 pairs"
-Analyzed Preliminary Pairs in this Study,8 pairs
+Analyzed Preliminary Pairs in this Study,7001 pairs
 Depth Ground Truth Storage Format,16-bit PNG (Lossless uint16)
 Depth Physical Scale Formula,Z_meters = raw_uint16 / 1000.0
-Mean Valid Depth Value,1.83 meters
-Median Valid Depth Value,1.80 meters
-Standard Deviation of Depth,0.66 meters
-"Effective Evaluation Range [Min, Max]","[0.53m, 3.82m]"
-Mean Invalid Pixel Rate across Frames,0.00%
-Maximum Observed Invalid Pixel Rate,0.00%
+Mean Valid Depth Value,2.32 meters
+Median Valid Depth Value,2.07 meters
+Standard Deviation of Depth,1.04 meters
+"Effective Evaluation Range [Min, Max]","[0.50m, 8.00m]"
+Mean Invalid Pixel Rate across Frames,10.34%
+Maximum Observed Invalid Pixel Rate,64.53%
