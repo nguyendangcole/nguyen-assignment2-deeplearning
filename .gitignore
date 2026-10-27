@@ -1,0 +1,26 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Training data & model checkpoints (avoid large binary push to git)
+*.pth
+*.pt
+*.onnx
+*.h5
+checkpoints/
+data/
+datasets/
