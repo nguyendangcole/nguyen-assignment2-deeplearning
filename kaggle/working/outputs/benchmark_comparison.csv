@@ -1,0 +1,5 @@
+Experiment,Model Architecture,Training Strategy,RMSE (m) ↓,AbsRel ↓,δ1 (< 1.25) ↑,δ2 (< 1.25²) ↑,δ3 (< 1.25³) ↑
+E0,Depth Anything V2 (Small - ViT),Pretrained Zero-shot (Hypersim),1.500,0.649,17.3%,55.4%,86.5%
+E1,Simple Custom CNN U-Net,Trained from Scratch (20 epochs),0.868,0.282,55.2%,82.4%,93.5%
+E2,Depth Anything V2 (Small - ViT),"Freeze ViT, Train Head (15 epochs)",0.560,0.153,83.2%,95.7%,97.8%
+E3,Depth Anything V2 (Small - ViT),Full End-to-End Fine-tuning (15 epochs),0.508,0.129,88.7%,96.6%,98.2%
