@@ -23,7 +23,7 @@ Kaggle cung cấp **30 giờ GPU miễn phí/tuần (Tesla P100 16GB / 2x T4 16G
 ### Cách 1: Nạp trực tiếp từ GitHub (Nhanh nhất)
 1. Mở Kaggle: [kaggle.com](https://www.kaggle.com/) $\rightarrow$ Chọn **Create** $\rightarrow$ **New Notebook**.
 2. Trên thanh menu trên cùng của Notebook, chọn **File** $\rightarrow$ **Import Notebook** (hoặc **Link to GitHub**).
-3. Dán link repository: `https://github.com/nguyendangcole/nguyen-assignment2-deeplearning` $\rightarrow$ Chọn file [`02_Training_and_Evaluation.ipynb`](file:///Users/nguyencolece/Desktop/sunrgbd-depth-estimation/02_Training_and_Evaluation.ipynb).
+3. Dán link repository: `https://github.com/nguyendangcole/deeplearning-assignment/tree/main/assignment2` $\rightarrow$ Chọn file [`02_Training_and_Evaluation.ipynb`](file:///Users/nguyencolece/Desktop/sunrgbd-depth-estimation/02_Training_and_Evaluation.ipynb).
 
 ### Cách 2: Tải lên thủ công (Upload)
 1. Bấm **File** $\rightarrow$ **Upload Notebook** $\rightarrow$ Kéo tệp [`02_Training_and_Evaluation.ipynb`](file:///Users/nguyencolece/Desktop/sunrgbd-depth-estimation/02_Training_and_Evaluation.ipynb) vào.
