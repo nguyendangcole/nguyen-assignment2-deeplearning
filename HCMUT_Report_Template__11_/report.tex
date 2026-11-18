@@ -569,7 +569,7 @@ To rigorously comply with Section 21 of the HCMUT Course Handbook, every experim
 
   \item \textbf{Scientific Hypothesis:} Pure convolutional architectures (U-Net) are constrained by localized receptive fields ($3 \times 3$ sliding kernels), leading to severe spatial ``depth bleeding'' across sharp object boundaries and an inability to anchor global room scale. In contrast, Vision Transformers with non-local self-attention can model global vanishing-point geometry and preserve crisp depth contours.
 
-  \item \textbf{Changed Factor:} Model architecture: Custom CNN U-Net (7.76M parameters) vs. Vision Transformer Foundation Model with DPT Head (24.79M parameters).
+  \item \textbf{Changed Factor:} Model architecture: Custom CNN U-Net (7.85M parameters) vs. Vision Transformer Foundation Model with DPT Head (24.79M parameters).
 
   \item \textbf{Fixed Factors:} Optimization algorithm (AdamW, weight decay $0.01$), loss formulation ($\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{SILog}} + 0.5 \cdot \mathcal{L}_{\text{grad}}$), input resolution ($256 \times 320$), mini-batch size (16), anti-leakage disjoint room split, and random seed (42).
 
