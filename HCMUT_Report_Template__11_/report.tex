@@ -296,9 +296,12 @@ Through exhaustive exploratory analysis across all 10,335 pairs (\Cref{fig:depth
     height=.42\textheight,
     keepaspectratio
   ]{figures/depth_and_invalid_distribution.png}
-  \caption{Distribution of valid metric depth values and invalid pixel rate per image across the 10,335 SUN RGB-D benchmark pairs.}
+  \caption{Distribution of valid metric depth values and
+  invalid pixel rate per image across 10,335 pairs.}
   \label{fig:depth_distribution}
 \end{figure}
+
+\FloatBarrier
 
 \subsection{Anti-Leakage Protocol: Disjoint Room Splitting}
 
@@ -890,13 +893,13 @@ To satisfy Handbook Section 20 guidelines, \Cref{tab:compute_cost} and \Cref{fig
 
     \midrule
 
-    \textbf{E0} & 24.79M & 2.73M & 353.8 MB & 17.33 ms & 57.7 & N/A (Zero-shot inference) \\
+    \textbf{E0} & 24.79M & 2.73M & 480.1 MB & 17.62 ms & 56.8 & N/A (Zero-shot inference) \\
 
-    \textbf{E1} & 7.76M  & 7.76M & 22.4 MB  & 4.12 ms  & 242.8 & $\sim 148\text{ s}$/ep ($\sim 49.3\text{ min}$) \\
+    \textbf{E1} & 7.85M  & 7.85M & 514.3 MB & 19.86 ms & 50.4 & $\sim 148\text{ s}$/ep ($\sim 49.3\text{ min}$) \\
 
-    \textbf{E2} & 24.79M & 2.73M & 353.8 MB & 17.33 ms & 57.7 & $\sim 184\text{ s}$/ep ($\sim 46.0\text{ min}$) \\
+    \textbf{E2} & 24.79M & 2.73M & 480.1 MB & 17.71 ms & 56.5 & $\sim 184\text{ s}$/ep ($\sim 46.0\text{ min}$) \\
 
-    \textbf{E3} & 24.79M & 24.79M& 353.8 MB & 17.37 ms & 57.6 & $\sim 186\text{ s}$/ep ($\sim 46.5\text{ min}$) \\
+    \textbf{E3} & 24.79M & 24.79M& 480.1 MB & 17.80 ms & 56.2 & $\sim 186\text{ s}$/ep ($\sim 46.5\text{ min}$) \\
 
     \bottomrule
 
@@ -916,7 +919,7 @@ To satisfy Handbook Section 20 guidelines, \Cref{tab:compute_cost} and \Cref{fig
 
 \end{figure}
 
-The fine-tuned Vision Transformer delivers an outstanding Pareto trade-off: despite having $3.18\times$ more parameters than the CNN baseline, it sustains an inference throughput of \textbf{57.6 FPS} on an edge-tier Tesla T4 (and up to \textbf{70.4 FPS} under TensorRT FP16 optimization), easily exceeding the real-time threshold required for robotic navigation ($>30\text{ FPS}$).
+The fine-tuned Vision Transformer delivers an outstanding Pareto trade-off: despite having $3.16\times$ more parameters than the CNN baseline, it sustains an inference throughput of \textbf{56.2 FPS} on an edge-tier Tesla T4 (and up to \textbf{70.4 FPS} under TensorRT FP16 optimization), easily exceeding the real-time threshold required for robotic navigation ($>30\text{ FPS}$).
 
 \subsection{Reproducibility Statement}
 

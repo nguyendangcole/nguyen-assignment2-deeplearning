@@ -24,3 +24,9 @@ venv/
 checkpoints/
 data/
 datasets/
+
+# Archives & Temporary Kaggle Outputs
+*.zip
+kaggle/
+kaggle-*/
+*.pdf
