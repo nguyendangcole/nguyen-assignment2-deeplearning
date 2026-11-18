@@ -807,7 +807,7 @@ Through exhaustive per-sample evaluation over the entire held-out test split, we
 
   \includegraphics[width=\linewidth,height=.60\textheight,keepaspectratio]{figures/error_heatmaps_worst_cases.png}
 
-  \caption{Exhaustive error heatmap analysis across the Top-5 worst-case test samples under model E3. The heatmaps $|D^* - \hat{D}|$ highlight localized error concentrations across mirror reflections, transparent window glass, and distant hallway perspectives.}
+  \caption{Exhaustive error heatmap analysis across the Top-5 worst-case test samples under model E3. The heatmaps $|D^* - \hat{D}|$ highlight localized error concentrations across specular tiled classroom floors, deep tiered lecture halls, thin metallic furniture frames, dark computer monitors, and infrared-absorbing plush blue sofas.}
 
   \label{fig:worst_case_heatmaps}
 
@@ -823,21 +823,23 @@ Through exhaustive per-sample evaluation over the entire held-out test split, we
 
   \small
 
-  \begin{tabularx}{\linewidth}{@{}>{\hsize=.75\hsize}Y c c >{\hsize=1.25\hsize}Y@{}}
+  \begin{tabularx}{\linewidth}{@{}>{\hsize=.85\hsize}Y c c >{\hsize=1.15\hsize}Y@{}}
 
     \toprule
 
-    \textbf{Failure mode} & \textbf{ID} & \textbf{AbsRel} & \textbf{Observation / possible cause} \\
+    \textbf{Failure mode} & \textbf{ID} & \textbf{AbsRel} & \textbf{Observation / physical cause} \\
 
     \midrule
 
-    Mirror reflection & \#688 & 1.356 & Reflected-room estimate (3.8 m) instead of the mirror surface (1.6 m); reflection creates ambiguous visual depth cues. \\
+    Glossy floor \& specular tiles & \#688 & 1.356 & Glossy floor reflections cause infrared dropouts in sensor ground truth; model predicts continuous physical floor plane. \\
 
-    Transparent glass & \#208 & 0.852 & Overestimation toward the outdoor patio; transparency also complicates sensor-derived reference depth. \\
+    Deep tiered lecture hall ($>6\text{ m}$) & \#208 & 0.852 & Large amphitheater with stepped seating and distant chalkboard; perspective compression ($Z \propto 1/\text{disp}$) degrades distant precision. \\
 
-    Long-range scene & \#6 & 0.678 & Large errors beyond 6 m; distant geometry provides weaker visual cues. \\
+    Thin furniture legs \& boundaries & \#684 & 0.728 & Slender metallic chair and desk frames against walls; occlusion boundary quantization between GT sensor and prediction. \\
 
-    Dark crevices & \#573 & 0.687 & Overestimation near floor--cabinet junctions with low texture and illumination. \\
+    Dark PC monitors \& backlight & \#595 & 0.688 & Computer lab screens absorb infrared sensor beams; strong ambient backlighting from windows produces sensor voids. \\
+
+    Infrared-absorbing dark fabric & \#573 & 0.687 & Cluster of deep navy-blue plush armchairs; dark fabric absorbs active structured-light pattern with complex upholstery shadowing. \\
 
     \bottomrule
 
@@ -849,13 +851,13 @@ Residual error maps $|D^* - \hat{D}|$ delineate four systematic failure categori
 
 \begin{enumerate}
 
-  \item \textbf{Specular and Transparent Surfaces:} Glass windows, glossy polished tables, and mirrors cause severe anomalies in the ground-truth sensor measurements. Models occasionally predict plausible physical surfaces behind mirrors where infrared sensors report complete dropouts.
+  \item \textbf{Specular Flooring and Sensor Dropouts:} Highly polished reflective classroom floor tiles (e.g., sample \#688) scatter active infrared sensor signals, creating artificial ground-truth voids. The vision model predicts a physically plausible continuous floor plane, yielding high nominal residual error.
 
-  \item \textbf{Thin Geometric Structures and Occlusion Boundaries:} CNN U-Net (E1) exhibits pronounced ``depth bleeding''—dilating foreground chair legs and table edges into background walls due to isotropic convolutional blurring. In contrast, ViT Fine-Tuned (E3) resolves crisp discontinuities due to non-local patch attention.
+  \item \textbf{Extreme Distance in Expansive Auditoriums ($>6\text{ m}$):} In large stepped lecture halls (\#208), physical distances to distant podiums and blackboards exceed $6\text{ m}$. Due to non-linear disparity geometry ($Z \propto 1/\text{disp}$), subtle disparity shifts result in large metric errors in far regions.
 
-  \item \textbf{Extreme Distance Saturation ($>6\text{ m}$):} As distance increases beyond $6\text{ m}$, depth precision naturally degrades due to perspective compression ($Z \propto 1/disparity$). Errors disproportionately cluster in long hallway perspectives.
+  \item \textbf{Slender Geometric Frames and Occlusions:} Thin metallic legs of classroom chairs and desks (\#684) challenge spatial feature grids. While CNN U-Net (E1) causes diffuse depth bleeding across boundaries, ViT (E3) resolves sharper contours despite sensor noise.
 
-  \item \textbf{Low-Texture Dark Shadow Regions:} Dark, unlit crevices beneath beds and sofas lack optical features, occasionally causing overestimation of local distance.
+  \item \textbf{Infrared-Absorbing Dark Surfaces and Electronic Screens:} Dark computer monitors in lab cubicles (\#595) and deep navy-blue fabric sofas (\#573) absorb active structured-light infrared beams, degrading sensor reference reliability.
 
 \end{enumerate}
 
